@@ -158,11 +158,43 @@ void generateVector(treeNode* root, dados* array, int &i){
         generateVector(root->right, array, i);
     }
 }
-
+void killTree(treeNode *&root){
+    if(root != NULL){
+        killTree(root->left);
+        killTree(root->right);
+        delete root;
+        root = NULL;
+    }
+}
+void makeBalancedTree(treeNode*& root, dados* array, int startArray, int endArray){
+    if(endArray < startArray){
+        root = NULL;
+    }else{
+        int MEIO = (startArray + endArray) / 2;
+        root = new treeNode;
+        root->info = array[MEIO];
+        makeBalancedTree(root->left, array, startArray, MEIO-1);
+        makeBalancedTree(root->right, array, MEIO+1, endArray);
+    }
+}
+bool staticBalanceTree(treeNode *&root){
+    if(!isBalancedTree(root)){
+        int lengthTree = treeLenght(root);
+        dados* array = new dados[lengthTree];
+        int i = 0;
+        generateVector(root, array, i);
+        killTree(root);
+        makeBalancedTree(root, array, 0, lengthTree - 1);
+        delete [] array;
+        return true;
+    }else{
+        return false;
+    }
+}
 int main(){
 
     treeNode *tree, *aux;
-    int NUMEROS[] = {6, 7, 2, 9, 4, 5};
+    int NUMEROS[] = {1,2,3,4,5,6,7,8,9,10,11};
     dados *TESTE = new dados[5];
     int TAMANHO_ARRAY_NUMEROS = sizeof(NUMEROS)/sizeof(int);
     init(tree);
@@ -215,19 +247,17 @@ int main(){
     }
     cout << endl;
 
-    cout << "Removendo o valor 2" << endl;
-    removeTreeNode(tree, dados{2});
+    cout << "Removendo o valor 11" << endl;
+    removeTreeNode(tree, dados{11});
     printCenter(tree);
     cout<< endl;
     if(isBalancedTree(tree)) cout << "Arvore Balanceda";
-    else cout << "Arvore Desbalanceada";
+    else cout << "Arvore Desbalanceada! Iniciando balanceamento estatico...";
     cout << endl;
-
-    int f = 0;
-    generateVector(tree, TESTE, f);
-    for(int x = 0; x < 5; x++){
-        cout << TESTE[x].key << " ";
-    }
+    staticBalanceTree(tree);
+    cout << "A arvore Balanceada é: ";
+    printPre(tree);
+    cout << endl;
 
     cout << endl << endl << "Fim da Execução..." << endl;
     return 0;
