@@ -9,6 +9,8 @@ struct dados{
 struct treeNode{
     dados info;
     treeNode *left, *right;
+    int bal;
+    bool isAVL; // BSTree e 
 };
 
 //Mude as funções abaixo caso a estrutura dados mude
@@ -66,9 +68,10 @@ bool insertBSTree(treeNode*& root, dados value){
         root->info = value;
         root->left = NULL;
         root->right = NULL;
+        root->isAVL = false;
         return true;
     }
-    else if(checkKey(root->info, value) == 1) insertBSTree(root->left, value);
+    else if(checkKey(root->info, value) == 1) insertBSTree(root->left, value); 
     else if(checkKey(root->info, value) == (-1)) insertBSTree(root->right, value);
     else if(checkKey(root->info, value) == 0) return false;
 }
@@ -84,6 +87,69 @@ int treeLenght(treeNode* root){
         return treeLenght(root->left) + treeLenght(root->right) + 1;
     }
 }
+
+//--------------------------------------------------------------------------------------------------
+//Código para Arvores Avl
+bool isAvlTree(treeNode* root){
+    return root->isAVL;
+}
+void rotateRightAVL(treeNode*& root){
+    treeNode* aux;
+    aux = root->left;
+    root->left = aux->right;
+    aux->right = root;
+    root = aux;
+}
+void rotateLeftAVL(treeNode*& root){
+    treeNode* aux;
+    aux = root->right;
+    root->right = aux->left;
+    aux->left = root;
+    root = aux;
+}
+bool insertAvlTree(treeNode* root, dados value){
+    if(root == NULL){
+        root = new treeNode;
+        root->info = value;
+        root->left = root->right = NULL;
+        root->bal = 0;
+        return true;
+    }else{
+        if(checkKey(root->info, value) == 1){
+            if(insertAvlTree(root->left, value)){
+                switch(root->bal){
+                    case +1: root->bal = 0; return false;
+                    case 0: root->bal = -1; return true;
+                    case -1:
+                        if(root->left->bal == -1) rotateRightAVL(root); // Rotação Simples
+                        else{
+                            //Rotação Dupla
+                            rotateLeftAVL(root->left);
+                            rotateRightAVL(root);
+                        }
+                        root->bal = 0;
+                        return false;
+                }
+            }
+        }else{
+            if(checkKey(value, root->info) == 1){
+                switch(root->bal){
+                    case -1: root->bal = 0; return false;
+                    case 0: root->bal = +1; return true;
+                    case +1:
+                        if(root->right->bal == +1) rotateLeftAVL(root); //Rotação Simples
+                        else{
+                            rotateRightAVL(root->right);
+                            rotateLeftAVL(root);
+                            root->bal = 0;
+                            return false;
+                        }
+                }
+            }
+        }
+    }
+}
+//----------------------------------------------------------------------------------------------------
 
 int treeHeight(treeNode* root){
     if(root == NULL){
