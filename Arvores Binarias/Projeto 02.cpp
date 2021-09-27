@@ -540,13 +540,17 @@ void novoFuncionario_Main(headerList<funcionario *, int, long, int> *& list,
     limpar_tela();
     cout << TITLE << endl;
 
-    insertLast(list, aux, aux->matricula);
-    insertBSTree(treeMatricula, aux, aux->matricula);
-    insertBSTree(treeNome, aux, aux->nome);
-    
-    limpar_tela();
-    cout << TITLE << endl;
-    cout << "Novo funcionario inserido, voltando ao menu principal!" << endl;
+    if(findNode(treeMatricula, aux->matricula) == NULL){
+        insertLast(list, aux, aux->matricula);
+        insertBSTree(treeMatricula, aux, aux->matricula);
+        insertBSTree(treeNome, aux, aux->nome);
+        
+        limpar_tela();
+        cout << TITLE << endl;
+        cout << "Novo funcionario inserido, voltando ao menu principal!" << endl;
+    }else{
+        cout << "A matricula digitada ja esta cadastrada!" << endl;
+    }
     pressKey2Cont();
 }
 void buscarFuncionario_Main(treeNode<funcionario *, long> * treeMatricula,
